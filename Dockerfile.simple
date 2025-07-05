@@ -1,27 +1,27 @@
-# Dockerfile para Railway con Chrome
+# Dockerfile simplificado para Railway con Chrome
 FROM python:3.11-slim
 
-# Instalar dependencias del sistema
+# Instalar dependencias básicas
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
     ca-certificates \
-    apt-transport-https \
-    software-properties-common \
     xvfb \
+    unzip \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Instalar Chrome (método alternativo)
+# Instalar Chrome desde Google
 RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
     && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list \
     && apt-get update \
     && apt-get install -y google-chrome-stable \
     && rm -rf /var/lib/apt/lists/*
 
-# Instalar ChromeDriver compatible
-RUN CHROME_VERSION=$(google-chrome --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+') \
-    && DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION%%.*}") \
-    && wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/${DRIVER_VERSION}/chromedriver_linux64.zip" \
+# Instalar ChromeDriver automáticamente
+RUN CHROME_VERSION=$(google-chrome --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1) \
+    && MAJOR_VERSION=$(echo $CHROME_VERSION | cut -d. -f1) \
+    && wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${MAJOR_VERSION}/chromedriver_linux64.zip" \
     && unzip /tmp/chromedriver.zip -d /tmp/ \
     && mv /tmp/chromedriver /usr/local/bin/chromedriver \
     && chmod +x /usr/local/bin/chromedriver \
@@ -30,24 +30,24 @@ RUN CHROME_VERSION=$(google-chrome --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+'
 # Verificar instalación
 RUN google-chrome --version && chromedriver --version
 
-# Crear directorio de trabajo
+# Configurar directorio de trabajo
 WORKDIR /app
 
-# Copiar requirements y instalar dependencias Python
+# Copiar requirements
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar código fuente
+# Copiar código
 COPY . .
 
-# Configurar variables de entorno
+# Variables de entorno
 ENV PYTHONUNBUFFERED=1
 ENV WS_HOST=0.0.0.0
 ENV DEBUG=False
 ENV RAILWAY_ENVIRONMENT=1
 ENV DISPLAY=:99
 
-# Exponer puerto
+# Puerto
 EXPOSE 8080
 
 # Comando de inicio
