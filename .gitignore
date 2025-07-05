@@ -1,0 +1,29 @@
+__pycache__/
+.env
+*.pyc
+*.db
+.env.*
+bot_data.json
+meta_ads_cuentas_insert.sql
+# Entornos virtuales de Python
+venv/
+.venv/
+
+# Archivos temporales
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Archivos de log
+*.log
+
+# Carpetas específicas de VSCode u otros IDEs
+.vscode/
+.idea/
+venv311/
+flask_session/
+clientes/aura/templates/panel_cliente_tareas/dominio brenda Ibarra.pdf
+*.sql
+*.md
+/venv_linux

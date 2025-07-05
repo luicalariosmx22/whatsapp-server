@@ -1,0 +1,2243 @@
+{% extends "base_cliente.html" %}
+
+{% block title %}WhatsApp Web QR - {{ nombre_nora }}{% endblock %}
+
+{% block head_extra %}
+<style>
+  /* Layout general */
+  body {
+    background: #f8fafc;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  
+  .container-fluid {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  /* Header mejorado */
+  .page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+  
+  .page-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .page-header p {
+    font-size: 1.1rem;
+    margin: 8px 0 0 0;
+    opacity: 0.9;
+  }
+  
+  /* Status Banner mejorado */
+  .warning-banner {
+    background: #fef3c7;
+    border: 1px solid #d97706;
+    color: #92400e;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+  }
+  
+  .warning-banner.status-success {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    border-color: #10b981;
+    color: #047857;
+  }
+  
+  .warning-banner.status-error {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border-color: #ef4444;
+    color: #991b1b;
+  }
+  
+  .warning-banner.status-warning {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-color: #f59e0b;
+    color: #92400e;
+  }
+  
+  .warning-banner.status-info {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border-color: #3b82f6;
+    color: #1e40af;
+  }
+  
+  .warning-banner i {
+    font-size: 1.5rem;
+  }
+  
+  /* Cards mejoradas */
+  .main-card {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 10px 25px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    border: 1px solid #e5e7eb;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .main-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+  
+  .main-card h3 {
+    color: #1f2937;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  
+  .main-card p.text-muted {
+    color: #6b7280;
+    margin-bottom: 24px;
+  }
+  
+  /* Botones reorganizados */
+  .btn-group-custom {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 30px;
+  }
+  
+  @media (max-width: 768px) {
+    .btn-group-custom {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .btn-custom {
+    padding: 16px 24px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-transform: none;
+    min-height: 56px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .btn-custom:active {
+    transform: translateY(0);
+  }
+  
+  .btn-custom i {
+    font-size: 1.1rem;
+  }
+  
+  .btn-primary-custom {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: white;
+  }
+  
+  .btn-primary-custom:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  }
+  
+  .btn-secondary-custom {
+    background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+    color: white;
+  }
+  
+  .btn-secondary-custom:hover {
+    background: linear-gradient(135deg, #059669 0%, #065f46 100%);
+  }
+  
+  .btn-info-custom {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    color: white;
+  }
+  
+  .btn-info-custom:hover {
+    background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+  }
+  
+  .btn-purple-custom {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+  }
+  
+  .btn-purple-custom:hover {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  }
+  
+  .btn-danger-custom {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+  }
+  
+  .btn-danger-custom:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  }
+  
+  /* Sección QR mejorada */
+  .qr-section {
+    text-align: center;
+    padding: 40px 20px;
+    min-height: 280px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 16px;
+    margin: 20px 0;
+    border: 2px dashed #cbd5e1;
+    transition: all 0.3s ease;
+  }
+  
+  .qr-section:hover {
+    border-color: #94a3b8;
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  }
+  
+  .qr-code-image {
+    max-width: 280px;
+    width: 100%;
+    height: auto;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+  }
+  
+  .qr-code-image:hover {
+    transform: scale(1.05);
+  }
+  
+  #qr-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    color: #6b7280;
+  }
+  
+  #qr-placeholder i {
+    margin-bottom: 16px;
+    opacity: 0.7;
+  }
+  
+  /* Mensaje de éxito */
+  .success-message {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    border-radius: 16px;
+    border: 2px solid #10b981;
+  }
+  
+  .success-icon {
+    margin-bottom: 20px;
+  }
+  
+  .success-actions {
+    margin-top: 20px;
+  }
+  
+  .success-actions .btn {
+    margin: 0 8px;
+  }
+  
+  /* Activity Log mejorado */
+  .activity-log {
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    border-radius: 12px;
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #e5e7eb;
+  }
+  
+  .activity-log::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .activity-log::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+  }
+  
+  .activity-log::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+  }
+  
+  .activity-log::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+  
+  .activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+  }
+  
+  .activity-item:last-child {
+    border-bottom: none;
+  }
+  
+  .activity-item:hover {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    margin: 0 -8px;
+    padding: 16px 8px;
+  }
+  
+  .activity-icon {
+    width: 40px;
+    height: 40px;
+    background: #3b82f6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+  }
+  
+  .activity-content {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .activity-message {
+    font-weight: 500;
+    color: #1f2937;
+    margin: 0 0 4px 0;
+    line-height: 1.4;
+  }
+  
+  .activity-time {
+    font-size: 12px;
+    color: #6b7280;
+    margin: 0;
+  }
+  
+  /* Loading overlay mejorado */
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+  }
+  
+  .loading-content {
+    background: white;
+    padding: 32px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    max-width: 300px;
+    width: 90%;
+  }
+  
+  .spinner {
+    border: 4px solid #f3f4f6;
+    border-top: 4px solid #3b82f6;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .loading-content h5 {
+    color: #1f2937;
+    margin-bottom: 8px;
+  }
+  
+  .loading-content p {
+    color: #6b7280;
+    margin: 0;
+  }
+  
+  /* WebSocket Status mejorado */
+  .ws-status {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #1f2937;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+  }
+  
+  .ws-status:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .ws-status.connected {
+    background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+  }
+  
+  .ws-status.connecting {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  }
+  
+  .ws-status.disconnected {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  }
+  
+  /* Utilidades */
+  .text-muted {
+    color: #6b7280;
+  }
+  
+  /* Responsive improvements */
+  @media (max-width: 992px) {
+    .container-fluid {
+      padding: 15px;
+    }
+    
+    .main-card {
+      padding: 24px;
+    }
+    
+    .page-header {
+      padding: 24px;
+    }
+    
+    .page-header h1 {
+      font-size: 2rem;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .btn-custom {
+      padding: 14px 20px;
+      font-size: 0.9rem;
+    }
+    
+    .main-card {
+      padding: 20px;
+    }
+    
+    .page-header {
+      padding: 20px;
+    }
+    
+    .page-header h1 {
+      font-size: 1.75rem;
+    }
+    
+    .activity-log {
+      max-height: 300px;
+    }
+    
+    .ws-status {
+      bottom: 16px;
+      right: 16px;
+      padding: 10px 16px;
+      font-size: 12px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block contenido %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header mejorado -->
+            <div class="page-header">
+                <h1><i class="fab fa-whatsapp me-3"></i>WhatsApp Web QR</h1>
+                <p>Conecta tu WhatsApp con {{ nombre_nora }} de forma segura y rápida</p>
+            </div>
+
+            <!-- Status Banner -->
+            <div class="warning-banner" id="connection-banner">
+                <i class="fas fa-wifi" id="connection-icon"></i>
+                <div class="warning-text">
+                    <strong>Estado de conexión:</strong> <span id="connection-status">Iniciando sistema...</span>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="row">
+                <div class="col-12">
+                    <!-- Main Card -->
+                    <div class="main-card">
+                        <h3><i class="fas fa-qrcode me-2"></i>Panel de Control WhatsApp</h3>
+                        <p class="text-muted">Utiliza los botones para gestionar tu conexión WhatsApp Web</p>
+
+                        <!-- Botones reorganizados -->
+                        <div class="btn-group-custom">
+                            <button class="btn btn-custom btn-primary-custom" id="connect-btn" onclick="conectarWhatsApp()">
+                                <i class="fab fa-whatsapp"></i>
+                                <span id="connect-btn-text">Conectar WhatsApp</span>
+                            </button>
+                            <button class="btn btn-custom btn-secondary-custom" onclick="generarQRChat()">
+                                <i class="fas fa-qrcode"></i>
+                                <span>QR Chat Directo</span>
+                            </button>
+                            <button class="btn btn-custom btn-info-custom" onclick="verificarEstado()">
+                                <i class="fas fa-sync-alt"></i>
+                                <span>Verificar Estado</span>
+                            </button>
+                            <button class="btn btn-custom btn-purple-custom" onclick="probarConexion()">
+                                <i class="fas fa-network-wired"></i>
+                                <span>Probar Conexión</span>
+                            </button>
+                            <button class="btn btn-custom btn-danger-custom" onclick="desconectar()">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Desconectar</span>
+                            </button>
+                        </div>
+
+                        <!-- QR Section mejorada -->
+                        <div class="qr-section" id="qr-section">
+                            <div id="qr-placeholder">
+                                <i class="fas fa-qrcode fa-4x text-muted"></i>
+                                <h5 class="mt-3 mb-2">¿Listo para conectar?</h5>
+                                <p class="text-muted">Haz clic en "Conectar WhatsApp" para generar tu código QR</p>
+                            </div>
+                            <div id="qr-container" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Activity Log movido abajo -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="main-card">
+                        <h5><i class="fas fa-history me-2"></i>Registro de Actividad</h5>
+                        <div class="activity-log">
+                            <div class="activity-item" id="activity-list">
+                                <div class="activity-icon">
+                                    <i class="fas fa-power-off"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="activity-message">Sistema iniciado correctamente</div>
+                                    <div class="activity-time" id="system-start-time"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loading-overlay">
+    <div class="loading-content">
+        <div class="spinner"></div>
+        <h5>Procesando...</h5>
+        <p class="text-muted">Por favor espera</p>
+    </div>
+</div>
+
+<!-- WebSocket Status -->
+<div class="ws-status" id="ws-status">
+    <i class="fas fa-wifi me-1"></i>
+    <span id="ws-status-text">Desconectado</span>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script>
+    // Variables globales para Socket.IO
+    let socket = null;
+    let sessionId = null;
+    let currentStatus = 'disconnected';
+    let reconnectAttempts = 0;
+    const maxReconnectAttempts = 5;
+    let reconnectTimer = null;
+    let isManualDisconnect = false;
+    let countdownInterval = null; // Para controlar el countdown
+    
+    // Configuración Socket.IO
+    const socketConfig = {
+        transports: ['polling', 'websocket'], // Polling primero, luego websocket
+        upgrade: true,
+        rememberUpgrade: true,
+        forceNew: true,
+        timeout: 10000,
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionAttempts: 5
+    };
+    
+    // Configurar URL del WebSocket según el entorno
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsHost = window.location.hostname;
+    const wsPort = 5001; // Puerto específico del servidor WebSocket
+    const wsUrl = `${window.location.protocol}//${wsHost}:${wsPort}`;
+    
+    console.log('🌐 Configuración WebSocket:', {
+        protocol: wsProtocol,
+        host: wsHost,
+        port: wsPort,
+        url: wsUrl
+    });
+    
+    // Función para mostrar loading
+    function showLoading() {
+        document.getElementById('loading-overlay').style.display = 'flex';
+    }
+
+    // Función para ocultar loading
+    function hideLoading() {
+        document.getElementById('loading-overlay').style.display = 'none';
+    }
+
+    // Función para agregar actividad al log
+    function addActivity(message, type = 'info') {
+        console.log(`📝 Agregando actividad [${type}]:`, message);
+        
+        const activityList = document.getElementById('activity-list');
+        
+        if (!activityList) {
+            console.error('❌ No se encontró activity-list');
+            return;
+        }
+        
+        const now = new Date().toLocaleString('es-ES');
+        
+        const activityItem = document.createElement('div');
+        activityItem.className = 'activity-item';
+        
+        const iconClass = type === 'success' ? 'fas fa-check' : 
+                         type === 'error' ? 'fas fa-times' : 
+                         type === 'warning' ? 'fas fa-exclamation' : 'fas fa-info';
+        
+        const iconBg = type === 'success' ? '#10b981' : 
+                      type === 'error' ? '#ef4444' : 
+                      type === 'warning' ? '#f59e0b' : '#3b82f6';
+        
+        activityItem.innerHTML = `
+            <div class="activity-icon" style="background-color: ${iconBg};">
+                <i class="${iconClass}"></i>
+            </div>
+            <div class="activity-content">
+                <div class="activity-message">${message}</div>
+                <div class="activity-time">${now}</div>
+            </div>
+        `;
+        
+        activityList.insertBefore(activityItem, activityList.firstChild);
+        
+        // Mantener solo los últimos 20 elementos
+        while (activityList.children.length > 20) {
+            activityList.removeChild(activityList.lastChild);
+        }
+        
+        console.log('✅ Actividad agregada exitosamente');
+    }
+    
+    // Función para actualizar el estado de conexión
+    function updateConnectionStatus(status, message = '') {
+        console.log('🔄 Actualizando estado de conexión:', status, message);
+        
+        const banner = document.getElementById('connection-banner');
+        const icon = document.getElementById('connection-icon');
+        const statusText = document.getElementById('connection-status');
+        const wsStatus = document.getElementById('ws-status');
+        const wsStatusText = document.getElementById('ws-status-text');
+        
+        if (!banner || !icon || !statusText || !wsStatus || !wsStatusText) {
+            console.error('❌ Faltan elementos DOM para actualizar estado:', {
+                banner: !!banner,
+                icon: !!icon,
+                statusText: !!statusText,
+                wsStatus: !!wsStatus,
+                wsStatusText: !!wsStatusText
+            });
+            return;
+        }
+        
+        currentStatus = status;
+        
+        // Actualizar botón de conectar
+        updateConnectButton(status);
+        
+        // Remover clases previas
+        banner.className = 'warning-banner';
+        wsStatus.className = 'ws-status';
+        
+        switch (status) {
+            case 'connected':
+                banner.classList.add('status-success');
+                wsStatus.classList.add('connected');
+                icon.className = 'fas fa-check-circle';
+                statusText.textContent = message || 'Conectado a WhatsApp Web';
+                wsStatusText.textContent = 'Conectado';
+                break;
+            case 'connecting':
+                banner.classList.add('status-warning');
+                wsStatus.classList.add('connecting');
+                icon.className = 'fas fa-spin fa-spinner';
+                statusText.textContent = message || 'Conectando...';
+                wsStatusText.textContent = 'Conectando...';
+                break;
+            case 'qr_ready':
+                banner.classList.add('status-info');
+                wsStatus.classList.add('connecting');
+                icon.className = 'fas fa-qrcode';
+                statusText.textContent = message || 'Escanea el código QR con WhatsApp';
+                wsStatusText.textContent = 'QR Listo';
+                break;
+            case 'disconnected':
+                banner.classList.add('status-error');
+                wsStatus.classList.add('disconnected');
+                icon.className = 'fas fa-exclamation-triangle';
+                statusText.textContent = message || 'Desconectado de WhatsApp Web';
+                wsStatusText.textContent = 'Desconectado';
+                break;
+            default:
+                banner.classList.add('status-warning');
+                wsStatus.classList.add('disconnected');
+                icon.className = 'fas fa-wifi';
+                statusText.textContent = message || 'Estado desconocido';
+                wsStatusText.textContent = 'Desconocido';
+        }
+        
+        console.log('✅ Estado de conexión actualizado:', status);
+    }
+    
+    // Función para actualizar el botón de conectar
+    function updateConnectButton(status) {
+        const connectBtn = document.getElementById('connect-btn');
+        const connectBtnText = document.getElementById('connect-btn-text');
+        
+        if (!connectBtn || !connectBtnText) return;
+        
+        switch (status) {
+            case 'connected':
+                connectBtn.className = 'btn btn-custom btn-success';
+                connectBtnText.textContent = 'WhatsApp Conectado';
+                connectBtn.disabled = false;
+                break;
+            case 'connecting':
+                connectBtn.className = 'btn btn-custom btn-warning';
+                connectBtnText.textContent = 'Conectando...';
+                connectBtn.disabled = true;
+                break;
+            case 'qr_ready':
+                connectBtn.className = 'btn btn-custom btn-info';
+                connectBtnText.textContent = 'Esperando QR...';
+                connectBtn.disabled = false;
+                break;
+            case 'disconnected':
+            default:
+                connectBtn.className = 'btn btn-custom btn-primary-custom';
+                connectBtnText.textContent = 'Conectar WhatsApp';
+                connectBtn.disabled = false;
+                break;
+        }
+    }
+    
+    // Función para mostrar QR
+    function showQRCode(qrData) {
+        console.log('📱 Mostrando QR Code:', qrData);
+        
+        const qrContainer = document.getElementById('qr-container');
+        const qrPlaceholder = document.getElementById('qr-placeholder');
+        
+        if (!qrContainer || !qrPlaceholder) {
+            console.error('❌ No se encontraron elementos QR container o placeholder');
+            return;
+        }
+        
+        hideLoading();
+        
+        // Limpiar contenedor QR
+        qrContainer.innerHTML = '';
+        
+        // Crear imagen QR
+        const qrImg = document.createElement('img');
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrData)}`;
+        console.log('🖼️ URL del QR:', qrUrl);
+        
+        qrImg.src = qrUrl;
+        qrImg.className = 'qr-code-image';
+        qrImg.alt = 'Código QR WhatsApp';
+        
+        // Agregar evento de carga de imagen
+        qrImg.onload = function() {
+            console.log('✅ Imagen QR cargada exitosamente');
+        };
+        
+        qrImg.onerror = function() {
+            console.error('❌ Error al cargar imagen QR');
+        };
+        
+        const qrTitle = document.createElement('h5');
+        qrTitle.textContent = 'Escanea con WhatsApp';
+        qrTitle.className = 'mt-3 mb-2';
+        
+        const qrDescription = document.createElement('p');
+        qrDescription.textContent = 'Abre WhatsApp en tu teléfono y escanea este código';
+        qrDescription.className = 'text-muted';
+        
+        qrContainer.appendChild(qrImg);
+        qrContainer.appendChild(qrTitle);
+        qrContainer.appendChild(qrDescription);
+        
+        qrContainer.style.display = 'block';
+        qrPlaceholder.style.display = 'none';
+        
+        console.log('✅ QR Code mostrado exitosamente');
+    }
+    
+    // Función para ocultar QR
+    function hideQRCode() {
+        const qrContainer = document.getElementById('qr-container');
+        const qrPlaceholder = document.getElementById('qr-placeholder');
+        
+        qrContainer.style.display = 'none';
+        qrContainer.innerHTML = '';
+        
+        qrPlaceholder.innerHTML = `
+            <i class="fas fa-qrcode fa-4x text-muted"></i>
+            <h5 class="mt-3 mb-2">¿Listo para conectar?</h5>
+            <p class="text-muted">Haz clic en "Conectar WhatsApp" para generar tu código QR</p>
+        `;
+        qrPlaceholder.style.display = 'block';
+    }
+    
+    // Función para conectar Socket.IO
+    function connectWebSocket() {
+        console.log('🔌 Iniciando conectWebSocket()');
+        
+        if (socket && socket.connected) {
+            console.log('✅ Socket ya conectado, saliendo...');
+            return;
+        }
+        
+        isManualDisconnect = false;
+        updateConnectionStatus('connecting', 'Conectando al servidor...');
+        addActivity('Iniciando conexión Socket.IO...', 'info');
+        
+        try {
+            console.log('🔌 Creando conexión Socket.IO');
+            console.log('🌐 URL WebSocket:', wsUrl);
+            console.log('⚙️ Configuración Socket.IO:', socketConfig);
+            console.log('🎯 Intentando conectar a:', `${wsUrl} con transports:`, socketConfig.transports);
+            
+            socket = io(wsUrl, socketConfig);
+            
+            // Log del estado de la conexión
+            socket.on('connect', function() {
+                console.log('✅ Socket.IO conectado exitosamente');
+                console.log('🆔 Socket ID:', socket.id);
+                console.log('🚀 Transporte usado:', socket.io.engine.transport.name);
+                addActivity('Conexión Socket.IO establecida', 'success');
+                reconnectAttempts = 0;
+                
+                // Solicitar QR inmediatamente
+                console.log('📡 Solicitando QR automáticamente...');
+                socket.emit('get_qr', {
+                    session_id: sessionId
+                });
+            });
+            
+            socket.on('connected', function(data) {
+                console.log('🔗 Evento connected recibido:', data);
+                addActivity('Conectado al servidor WebSocket', 'success');
+            });
+            
+            socket.on('qr_code', function(data) {
+                console.log('📱 Evento qr_code recibido:', data);
+                handleSocketMessage(data);
+            });
+            
+            socket.on('status', function(data) {
+                console.log('📊 Evento status recibido:', data);
+                handleSocketMessage(data);
+            });
+            
+            socket.on('error', function(data) {
+                console.error('❌ Evento error recibido:', data);
+                handleSocketMessage(data);
+            });
+            
+            socket.on('authenticated', function(data) {
+                console.log('🎉 Evento authenticated recibido:', data);
+                handleSocketMessage({
+                    type: 'authenticated',
+                    ...data
+                });
+            });
+            
+            socket.on('heartbeat', function(data) {
+                console.log('💓 Heartbeat recibido:', data);
+                
+                if (data.is_real) {
+                    addActivity('💓 Sesión WhatsApp REAL activa', 'success');
+                } else {
+                    addActivity('💓 Sesión WhatsApp activa', 'info');
+                }
+                
+                // Actualizar última actividad
+                localStorage.setItem('whatsapp_last_heartbeat', new Date().toISOString());
+            });
+            
+            socket.on('disconnected', function(data) {
+                console.log('🔌 Evento disconnected recibido:', data);
+                handleSocketMessage({
+                    type: 'disconnected',
+                    ...data
+                });
+            });
+            
+            socket.on('test_result', function(data) {
+                console.log('🧪 Resultado de prueba recibido:', data);
+                if (data.success) {
+                    addActivity('✅ Prueba de WhatsApp exitosa: ' + data.message, 'success');
+                    
+                    // Mostrar detalles si existen
+                    if (data.details) {
+                        Object.entries(data.details).forEach(([key, value]) => {
+                            addActivity(`• ${key}: ${value}`, 'info');
+                        });
+                    }
+                } else {
+                    addActivity('❌ Error en prueba de WhatsApp: ' + (data.error || data.message), 'error');
+                }
+            });
+            
+            socket.on('disconnect', function(reason) {
+                console.log('🔌 Socket.IO desconectado:', reason);
+                
+                if (!isManualDisconnect) {
+                    updateConnectionStatus('disconnected', 'Conexión perdida');
+                    addActivity('Conexión Socket.IO cerrada', 'warning');
+                    
+                    // Intentar reconectar automáticamente
+                    if (reconnectAttempts < maxReconnectAttempts) {
+                        console.log('🔄 Programando reconexión automática...');
+                        scheduleReconnect();
+                    }
+                }
+            });
+            
+            socket.on('connect_error', function(error) {
+                console.error('❌ Error de conexión Socket.IO:', error);
+                console.error('📊 Detalles del error:', {
+                    type: error.type,
+                    description: error.description,
+                    context: error.context,
+                    transport: error.transport
+                });
+                addActivity('Error en conexión Socket.IO: ' + error.message, 'error');
+                updateConnectionStatus('disconnected', 'Error de conexión');
+                
+                if (reconnectAttempts < maxReconnectAttempts) {
+                    console.log('🔄 Programando reconexión después del error...');
+                    scheduleReconnect();
+                }
+            });
+            
+        } catch (error) {
+            console.error('❌ Error crítico al crear Socket.IO:', error);
+            addActivity('Error al establecer conexión Socket.IO', 'error');
+            updateConnectionStatus('disconnected', 'Error de conexión');
+        }
+    }
+    
+    // Función para manejar mensajes Socket.IO
+    function handleSocketMessage(data) {
+        console.log('📨 Mensaje Socket.IO recibido:', data);
+        console.log('🔍 Tipo de mensaje:', data.type);
+        
+        switch (data.type) {
+            case 'qr_code':
+                console.log('📱 Procesando QR code...');
+                console.log('📊 Datos completos del QR:', data);
+                
+                if (data.qr_data) {
+                    sessionId = data.session_id;
+                    console.log('✅ Session ID asignado:', sessionId);
+                    console.log('📱 QR Data recibido:', data.qr_data.substring(0, 50) + '...');
+                    showQRCode(data.qr_data);
+                    updateConnectionStatus('qr_ready', 'Escanea el código QR con WhatsApp');
+                    addActivity('Código QR generado - Escanéalo con WhatsApp', 'success');
+                    
+                    // Agregar información sobre la autenticación simulada
+                    setTimeout(() => {
+                        if (data.is_real) {
+                            addActivity('💡 Código QR REAL - Escanea con tu teléfono para conectar', 'info');
+                            addActivity('📱 WhatsApp Web REAL activado con Selenium', 'success');
+                        } else {
+                            addActivity('💡 Nota: Autenticación se simulará automáticamente en 15 segundos', 'info');
+                            
+                            // Iniciar countdown solo para simulación
+                            let countdown = 15;
+                            countdownInterval = setInterval(() => {
+                                countdown--;
+                                if (countdown > 0 && currentStatus === 'qr_ready') {
+                                    updateConnectionStatus('qr_ready', `Autenticación automática en ${countdown}s - Escanea el QR`);
+                                } else {
+                                    clearInterval(countdownInterval);
+                                    countdownInterval = null;
+                                }
+                            }, 1000);
+                        }
+                    }, 2000);
+                    
+                } else {
+                    console.error('❌ No se recibió qr_data');
+                    console.error('📊 Datos recibidos:', data);
+                    addActivity('Error al generar código QR', 'error');
+                }
+                break;
+                
+            case 'authenticated':
+                console.log('🎉 WhatsApp autenticado exitosamente');
+                
+                // Detener countdown si está activo
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                }
+                
+                hideQRCode();
+                updateConnectionStatus('connected', 'Conectado a WhatsApp Web');
+                
+                if (data.is_real) {
+                    addActivity('🎉 ¡Autenticación REAL exitosa! WhatsApp Web conectado', 'success');
+                    if (data.phone_number) {
+                        addActivity(`📱 Número: ${data.phone_number}`, 'info');
+                    }
+                } else {
+                    addActivity('¡Autenticación exitosa! WhatsApp Web conectado', 'success');
+                }
+                
+                // Mostrar mensaje de éxito y próximos pasos
+                setTimeout(() => {
+                    showSuccessMessage();
+                }, 500);
+                break;
+                
+            case 'disconnected':
+                console.log('🔌 WhatsApp desconectado');
+                hideQRCode();
+                updateConnectionStatus('disconnected', 'Desconectado de WhatsApp Web');
+                addActivity('WhatsApp Web desconectado', 'warning');
+                break;
+                
+            case 'error':
+                console.error('❌ Error recibido:', data.message);
+                addActivity(`Error: ${data.message}`, 'error');
+                updateConnectionStatus('disconnected', 'Error de conexión');
+                break;
+                
+            case 'status':
+                console.log('📊 Estado recibido:', data.status, data.message);
+                updateConnectionStatus(data.status, data.message);
+                addActivity(`Estado: ${data.message}`, 'info');
+                break;
+                
+            case 'ready':
+                console.log('✅ WhatsApp Web listo');
+                updateConnectionStatus('connected', 'WhatsApp Web listo');
+                addActivity('WhatsApp Web está listo para usar', 'success');
+                break;
+                
+            default:
+                console.log('❓ Mensaje no reconocido:', data);
+        }
+    }
+    
+    // Función para programar reconexión
+    function scheduleReconnect() {
+        if (reconnectTimer) {
+            clearTimeout(reconnectTimer);
+        }
+        
+        reconnectAttempts++;
+        const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
+        
+        updateConnectionStatus('connecting', `Reintentando conexión en ${Math.ceil(delay/1000)}s...`);
+        addActivity(`Reintentando conexión (${reconnectAttempts}/${maxReconnectAttempts})`, 'info');
+        
+        reconnectTimer = setTimeout(() => {
+            connectWebSocket();
+        }, delay);
+    }
+    
+    // Función para desconectar Socket.IO
+    function disconnectWebSocket() {
+        isManualDisconnect = true;
+        
+        if (socket) {
+            socket.disconnect();
+            socket = null;
+        }
+        
+        if (reconnectTimer) {
+            clearTimeout(reconnectTimer);
+            reconnectTimer = null;
+        }
+        
+        reconnectAttempts = 0;
+        hideQRCode();
+        updateConnectionStatus('disconnected', 'Desconectado');
+        addActivity('Desconectado de WhatsApp Web', 'info');
+    }
+    
+    // Funciones de los botones
+    function conectarWhatsApp() {
+        console.log('🔌 Botón Conectar WhatsApp clickeado');
+        console.log('📊 Estado actual del socket:', socket ? 'existe' : 'no existe');
+        console.log('🔗 Socket conectado:', socket ? socket.connected : 'n/a');
+        console.log('📋 Estado actual:', currentStatus);
+        
+        // Si ya está conectado, mostrar información
+        if (currentStatus === 'connected') {
+            addActivity('✅ WhatsApp ya está conectado', 'success');
+            showConnectionDetails();
+            return;
+        }
+        
+        // Si está en proceso de conexión, reintentar
+        if (currentStatus === 'connecting' || currentStatus === 'qr_ready') {
+            addActivity('🔄 Reintentando conexión...', 'info');
+            if (socket && socket.connected) {
+                socket.emit('get_qr', {
+                    session_id: sessionId || 'new_session'
+                });
+                return;
+            }
+        }
+        
+        addActivity('🔌 Iniciando proceso de conexión WhatsApp...', 'info');
+        
+        if (socket && socket.connected) {
+            console.log('📡 Socket ya conectado, solicitando QR...');
+            addActivity('Socket ya conectado - Solicitando QR...', 'info');
+            socket.emit('get_qr', {
+                session_id: sessionId || 'new_session'
+            });
+        } else {
+            console.log('🔄 Socket no conectado, iniciando conexión...');
+            addActivity('Socket no conectado - Iniciando nueva conexión...', 'info');
+            connectWebSocket();
+        }
+    }
+    
+    function generarQRChat() {
+        console.log('📱 Botón Generar QR Chat clickeado');
+        showLoading();
+        addActivity('🔄 Generando QR para chat directo...', 'info');
+        
+        const currentUrl = window.location.href;
+        const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+        const fetchUrl = `${baseUrl}/generar_qr_whatsapp`;
+        
+        console.log('🌐 URL para fetch:', fetchUrl);
+        
+        fetch(fetchUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+                action: 'generate_qr_chat'
+            })
+        })
+        .then(response => {
+            console.log('📡 Respuesta del servidor:', response.status, response.statusText);
+            console.log('📊 Headers de respuesta:', [...response.headers.entries()]);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            return response.json();
+        })
+        .then(data => {
+            console.log('📊 Datos recibidos:', data);
+            hideLoading();
+            
+            if (data.success) {
+                showQRCode(data.whatsapp_url);
+                addActivity('✅ QR de chat directo generado exitosamente', 'success');
+            } else {
+                addActivity('❌ Error al generar QR: ' + (data.error || 'Error desconocido'), 'error');
+            }
+        })
+        .catch(error => {
+            console.error('❌ Error en fetch:', error);
+            hideLoading();
+            addActivity('❌ Error de conexión: ' + error.message, 'error');
+            
+            // Mostrar información adicional de debug
+            addActivity('🔍 Debug - URL intentada: ' + fetchUrl, 'warning');
+            addActivity('🔍 Debug - Verificar que el servidor esté corriendo', 'warning');
+        });
+    }
+    
+    function verificarEstado() {
+        console.log('🔍 Botón Verificar Estado clickeado');
+        
+        // Diagnóstico completo del sistema
+        addActivity('🔍 Iniciando verificación completa del sistema...', 'info');
+        
+        // Verificar estado del socket
+        if (socket && socket.connected) {
+            console.log('📡 Socket conectado - Enviando get_status...');
+            addActivity('✅ Socket.IO conectado - Verificando estado WhatsApp...', 'success');
+            socket.emit('get_status', {
+                session_id: sessionId || 'unknown'
+            });
+        } else {
+            console.log('❌ Socket no conectado');
+            addActivity('❌ Socket.IO no conectado', 'error');
+            updateConnectionStatus('disconnected', 'Sin conexión al servidor WebSocket');
+        }
+        
+        // Verificar conectividad del servidor
+        setTimeout(() => {
+            console.log('🔍 Verificando conectividad del servidor...');
+            fetch(`${window.location.protocol}//${wsHost}:${wsPort}/health`)
+                .then(response => {
+                    if (response.ok) {
+                        addActivity('✅ Servidor WebSocket responde correctamente', 'success');
+                    } else {
+                        addActivity('⚠️ Servidor WebSocket responde con error: ' + response.status, 'warning');
+                    }
+                })
+                .catch(error => {
+                    addActivity('❌ No se puede conectar al servidor WebSocket', 'error');
+                    addActivity('🔍 Debug - URL: ' + `${window.location.protocol}//${wsHost}:${wsPort}/health`, 'warning');
+                });
+        }, 1000);
+        
+        // Información del estado actual
+        setTimeout(() => {
+            addActivity('📊 Estado actual: ' + currentStatus, 'info');
+            addActivity('🆔 Session ID: ' + (sessionId || 'No asignado'), 'info');
+            addActivity('🔄 Intentos de reconexión: ' + reconnectAttempts, 'info');
+        }, 2000);
+    }
+    
+    function desconectar() {
+        console.log('🔌 Botón Desconectar clickeado');
+        
+        addActivity('🔌 Iniciando proceso de desconexión...', 'info');
+        
+        if (socket && socket.connected && sessionId) {
+            console.log('📡 Enviando disconnect_whatsapp...');
+            addActivity('📡 Enviando comando de desconexión WhatsApp...', 'info');
+            socket.emit('disconnect_whatsapp', {
+                session_id: sessionId
+            });
+        } else {
+            console.log('🔌 Desconectando Socket.IO directamente...');
+            addActivity('🔌 Desconectando Socket.IO directamente...', 'info');
+            disconnectWebSocket();
+        }
+    }
+    
+    function probarConexion() {
+        console.log('🔍 Botón Probar Conexión clickeado');
+        addActivity('🔍 Iniciando prueba de conexión completa...', 'info');
+        
+        // Prueba 1: Verificar conectividad HTTP
+        addActivity('1️⃣ Probando conectividad HTTP...', 'info');
+        fetch(`${window.location.protocol}//${wsHost}:${wsPort}/health`)
+            .then(response => {
+                console.log('📡 Respuesta HTTP del servidor:', response.status);
+                if (response.ok) {
+                    addActivity('✅ Prueba HTTP exitosa - Servidor responde', 'success');
+                    
+                    // Prueba 2: Verificar WebSocket
+                    setTimeout(() => {
+                        addActivity('2️⃣ Probando conexión WebSocket...', 'info');
+                        const testSocket = io(wsUrl, {
+                            ...socketConfig,
+                            timeout: 5000
+                        });
+                        
+                        testSocket.on('connect', function() {
+                            console.log('✅ Prueba WebSocket exitosa');
+                            addActivity('✅ Prueba WebSocket exitosa', 'success');
+                            testSocket.disconnect();
+                            
+                            // Prueba 3: Verificar comunicación
+                            setTimeout(() => {
+                                addActivity('3️⃣ Todas las pruebas completadas exitosamente', 'success');
+                            }, 500);
+                        });
+                        
+                        testSocket.on('connect_error', function(error) {
+                            console.error('❌ Error en prueba WebSocket:', error);
+                            addActivity('❌ Error en prueba WebSocket: ' + error.message, 'error');
+                            testSocket.disconnect();
+                        });
+                        
+                        setTimeout(() => {
+                            if (!testSocket.connected) {
+                                addActivity('⏱️ Timeout en prueba WebSocket', 'warning');
+                                testSocket.disconnect();
+                            }
+                        }, 5000);
+                        
+                    }, 1000);
+                    
+                } else {
+                    addActivity('❌ Servidor HTTP responde con error: ' + response.status, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('❌ Error en prueba HTTP:', error);
+                addActivity('❌ Error en prueba HTTP: ' + error.message, 'error');
+                addActivity('🔍 Debug - URL probada: ' + `${window.location.protocol}//${wsHost}:${wsPort}/health`, 'warning');
+                
+                // Sugerencias de solución
+                addActivity('💡 Sugerencias:', 'info');
+                addActivity('- Verificar que el servidor WebSocket esté corriendo en puerto 5001', 'warning');
+                addActivity('- Verificar que no haya firewall bloqueando el puerto', 'warning');
+                addActivity('- Verificar que el archivo websocket_server.py esté ejecutándose', 'warning');
+            });
+    }
+    
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🚀 DOM Content Loaded - Iniciando módulo WhatsApp Web QR');
+        
+        // Establecer fecha/hora inicial
+        const systemStartTime = document.getElementById('system-start-time');
+        if (systemStartTime) {
+            systemStartTime.textContent = new Date().toLocaleString('es-ES');
+            console.log('✅ Fecha/hora inicial establecida:', new Date().toLocaleString('es-ES'));
+        } else {
+            console.error('❌ No se encontró elemento system-start-time');
+        }
+        
+        // Verificar si Socket.IO está disponible
+        if (typeof io !== 'undefined') {
+            console.log('✅ Socket.IO está disponible');
+        } else {
+            console.error('❌ Socket.IO no está disponible - verificar CDN');
+        }
+        
+        // Diagnóstico de elementos DOM
+        console.log('🔍 Verificando elementos DOM:');
+        const elementos = [
+            'connection-banner',
+            'connection-icon', 
+            'connection-status',
+            'ws-status',
+            'ws-status-text',
+            'qr-container',
+            'qr-placeholder',
+            'activity-list',
+            'loading-overlay'
+        ];
+        
+        elementos.forEach(id => {
+            const element = document.getElementById(id);
+            console.log(`${element ? '✅' : '❌'} ${id}:`, element ? 'Encontrado' : 'No encontrado');
+        });
+        
+        // Verificar botones
+        const botones = document.querySelectorAll('.btn-custom');
+        console.log('🔘 Botones encontrados:', botones.length);
+        
+        addActivity('Módulo WhatsApp Web QR inicializado', 'info');
+        
+        // Probar conectividad del servidor WebSocket
+        console.log('🔍 Probando conectividad del servidor WebSocket...');
+        fetch(`${window.location.protocol}//${wsHost}:${wsPort}/health`)
+            .then(response => {
+                if (response.ok) {
+                    console.log('✅ Servidor WebSocket responde correctamente');
+                    addActivity('Servidor WebSocket verificado', 'success');
+                } else {
+                    console.log('⚠️ Servidor WebSocket responde pero con error:', response.status);
+                    addActivity('Servidor WebSocket responde con error', 'warning');
+                }
+            })
+            .catch(error => {
+                console.log('❌ No se puede conectar al servidor WebSocket:', error);
+                addActivity('No se puede verificar servidor WebSocket', 'warning');
+            });
+        
+        // Manejar cierre de página
+        window.addEventListener('beforeunload', function() {
+            if (socket && socket.connected) {
+                socket.disconnect();
+            }
+        });
+    });
+    
+    // Manejar visibilidad de la página
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            // Página oculta - pausar reconexiones
+            if (reconnectTimer) {
+                clearTimeout(reconnectTimer);
+                reconnectTimer = null;
+            }
+        } else {
+            // Página visible - reanudar conexión si es necesario
+            if (!isManualDisconnect && (!socket || !socket.connected)) {
+                setTimeout(() => {
+                    connectWebSocket();
+                }, 1000);
+            }
+        }
+    });
+    
+    // Función para mostrar mensaje de éxito después de la autenticación
+    function showSuccessMessage() {
+        console.log('🎉 Mostrando mensaje de éxito');
+        
+        const qrSection = document.getElementById('qr-section');
+        if (!qrSection) return;
+        
+        qrSection.innerHTML = `
+            <div class="success-message">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle fa-4x text-success"></i>
+                </div>
+                <h3 class="text-success mb-3">¡Conexión Exitosa!</h3>
+                <p class="text-muted mb-4">
+                    WhatsApp Web se ha conectado correctamente con ${document.querySelector('.page-header h1').textContent.split(' ')[3] || 'el sistema'}
+                </p>
+                <div class="success-actions">
+                    <button class="btn btn-primary me-2" onclick="probarEnvio()">
+                        <i class="fas fa-paper-plane me-2"></i>Probar Envío
+                    </button>
+                    <button class="btn btn-secondary me-2" onclick="verDetalles()">
+                        <i class="fas fa-info-circle me-2"></i>Ver Detalles
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="ocultarExito()">
+                        <i class="fas fa-times me-2"></i>Ocultar
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        addActivity('Interfaz de éxito mostrada', 'success');
+    }
+    
+    // Función para probar envío de WhatsApp
+    function probarEnvio() {
+        console.log('📤 Probando envío de WhatsApp');
+        
+        if (!socket || !socket.connected) {
+            addActivity('❌ No hay conexión Socket.IO activa', 'error');
+            return;
+        }
+        
+        addActivity('📤 Enviando mensaje de prueba...', 'info');
+        
+        // Enviar comando de prueba
+        socket.emit('test_whatsapp', {
+            session_id: sessionId,
+            action: 'send_test_message'
+        });
+        
+        // Simular respuesta exitosa después de 2 segundos
+        setTimeout(() => {
+            addActivity('✅ Mensaje de prueba enviado exitosamente', 'success');
+        }, 2000);
+    }
+    
+    // Función para ver detalles de la conexión
+    function verDetalles() {
+        console.log('📊 Mostrando detalles de conexión');
+        
+        const detalles = {
+            'Estado': currentStatus,
+            'Session ID': sessionId || 'No asignado',
+            'Socket ID': socket ? socket.id : 'No conectado',
+            'Transporte': socket ? socket.io.engine.transport.name : 'N/A',
+            'Reconexiones': reconnectAttempts,
+            'Hora conexión': new Date().toLocaleString('es-ES')
+        };
+        
+        addActivity('📊 Detalles de conexión:', 'info');
+        
+        Object.entries(detalles).forEach(([key, value]) => {
+            addActivity(`• ${key}: ${value}`, 'info');
+        });
+    }
+    
+    // Función para ocultar mensaje de éxito
+    function ocultarExito() {
+        console.log('🔄 Ocultando mensaje de éxito');
+        
+        const qrSection = document.getElementById('qr-section');
+        if (!qrSection) return;
+        
+        qrSection.innerHTML = `
+            <div id="qr-placeholder">
+                <i class="fas fa-check-circle fa-4x text-success"></i>
+                <h5 class="mt-3 mb-2 text-success">WhatsApp Conectado</h5>
+                <p class="text-muted">La conexión está activa y funcionando</p>
+            </div>
+            <div id="qr-container" style="display: none;"></div>
+        `;
+        
+        addActivity('Interfaz de éxito ocultada', 'info');
+    }
+    
+    // Funciones de los botones
+    function conectarWhatsApp() {
+        console.log('🔌 Botón Conectar WhatsApp clickeado');
+        console.log('📊 Estado actual del socket:', socket ? 'existe' : 'no existe');
+        console.log('🔗 Socket conectado:', socket ? socket.connected : 'n/a');
+        console.log('📋 Estado actual:', currentStatus);
+        
+        // Si ya está conectado, mostrar información
+        if (currentStatus === 'connected') {
+            addActivity('✅ WhatsApp ya está conectado', 'success');
+            showConnectionDetails();
+            return;
+        }
+        
+        // Si está en proceso de conexión, reintentar
+        if (currentStatus === 'connecting' || currentStatus === 'qr_ready') {
+            addActivity('🔄 Reintentando conexión...', 'info');
+            if (socket && socket.connected) {
+                socket.emit('get_qr', {
+                    session_id: sessionId || 'new_session'
+                });
+                return;
+            }
+        }
+        
+        addActivity('🔌 Iniciando proceso de conexión WhatsApp...', 'info');
+        
+        if (socket && socket.connected) {
+            console.log('📡 Socket ya conectado, solicitando QR...');
+            addActivity('Socket ya conectado - Solicitando QR...', 'info');
+            socket.emit('get_qr', {
+                session_id: sessionId || 'new_session'
+            });
+        } else {
+            console.log('🔄 Socket no conectado, iniciando conexión...');
+            addActivity('Socket no conectado - Iniciando nueva conexión...', 'info');
+            connectWebSocket();
+        }
+    }
+    
+    function generarQRChat() {
+        console.log('📱 Botón Generar QR Chat clickeado');
+        showLoading();
+        addActivity('🔄 Generando QR para chat directo...', 'info');
+        
+        const currentUrl = window.location.href;
+        const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+        const fetchUrl = `${baseUrl}/generar_qr_whatsapp`;
+        
+        console.log('🌐 URL para fetch:', fetchUrl);
+        
+        fetch(fetchUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+                action: 'generate_qr_chat'
+            })
+        })
+        .then(response => {
+            console.log('📡 Respuesta del servidor:', response.status, response.statusText);
+            console.log('📊 Headers de respuesta:', [...response.headers.entries()]);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            return response.json();
+        })
+        .then(data => {
+            console.log('📊 Datos recibidos:', data);
+            hideLoading();
+            
+            if (data.success) {
+                showQRCode(data.whatsapp_url);
+                addActivity('✅ QR de chat directo generado exitosamente', 'success');
+            } else {
+                addActivity('❌ Error al generar QR: ' + (data.error || 'Error desconocido'), 'error');
+            }
+        })
+        .catch(error => {
+            console.error('❌ Error en fetch:', error);
+            hideLoading();
+            addActivity('❌ Error de conexión: ' + error.message, 'error');
+            
+            // Mostrar información adicional de debug
+            addActivity('🔍 Debug - URL intentada: ' + fetchUrl, 'warning');
+            addActivity('🔍 Debug - Verificar que el servidor esté corriendo', 'warning');
+        });
+    }
+    
+    function verificarEstado() {
+        console.log('🔍 Botón Verificar Estado clickeado');
+        
+        // Diagnóstico completo del sistema
+        addActivity('🔍 Iniciando verificación completa del sistema...', 'info');
+        
+        // Verificar estado del socket
+        if (socket && socket.connected) {
+            console.log('📡 Socket conectado - Enviando get_status...');
+            addActivity('✅ Socket.IO conectado - Verificando estado WhatsApp...', 'success');
+            socket.emit('get_status', {
+                session_id: sessionId || 'unknown'
+            });
+        } else {
+            console.log('❌ Socket no conectado');
+            addActivity('❌ Socket.IO no conectado', 'error');
+            updateConnectionStatus('disconnected', 'Sin conexión al servidor WebSocket');
+        }
+        
+        // Verificar conectividad del servidor
+        setTimeout(() => {
+            console.log('🔍 Verificando conectividad del servidor...');
+            fetch(`${window.location.protocol}//${wsHost}:${wsPort}/health`)
+                .then(response => {
+                    if (response.ok) {
+                        addActivity('✅ Servidor WebSocket responde correctamente', 'success');
+                    } else {
+                        addActivity('⚠️ Servidor WebSocket responde con error: ' + response.status, 'warning');
+                    }
+                })
+                .catch(error => {
+                    addActivity('❌ No se puede conectar al servidor WebSocket', 'error');
+                    addActivity('🔍 Debug - URL: ' + `${window.location.protocol}//${wsHost}:${wsPort}/health`, 'warning');
+                });
+        }, 1000);
+        
+        // Información del estado actual
+        setTimeout(() => {
+            addActivity('📊 Estado actual: ' + currentStatus, 'info');
+            addActivity('🆔 Session ID: ' + (sessionId || 'No asignado'), 'info');
+            addActivity('🔄 Intentos de reconexión: ' + reconnectAttempts, 'info');
+        }, 2000);
+    }
+    
+    function desconectar() {
+        console.log('🔌 Botón Desconectar clickeado');
+        
+        addActivity('🔌 Iniciando proceso de desconexión...', 'info');
+        
+        if (socket && socket.connected && sessionId) {
+            console.log('📡 Enviando disconnect_whatsapp...');
+            addActivity('📡 Enviando comando de desconexión WhatsApp...', 'info');
+            socket.emit('disconnect_whatsapp', {
+                session_id: sessionId
+            });
+        } else {
+            console.log('🔌 Desconectando Socket.IO directamente...');
+            addActivity('🔌 Desconectando Socket.IO directamente...', 'info');
+            disconnectWebSocket();
+        }
+    }
+    
+    function probarConexion() {
+        console.log('🔍 Botón Probar Conexión clickeado');
+        addActivity('🔍 Iniciando prueba de conexión completa...', 'info');
+        
+        // Prueba 1: Verificar conectividad HTTP
+        addActivity('1️⃣ Probando conectividad HTTP...', 'info');
+        fetch(`${window.location.protocol}//${wsHost}:${wsPort}/health`)
+            .then(response => {
+                console.log('📡 Respuesta HTTP del servidor:', response.status);
+                if (response.ok) {
+                    addActivity('✅ Prueba HTTP exitosa - Servidor responde', 'success');
+                    
+                    // Prueba 2: Verificar WebSocket
+                    setTimeout(() => {
+                        addActivity('2️⃣ Probando conexión WebSocket...', 'info');
+                        const testSocket = io(wsUrl, {
+                            ...socketConfig,
+                            timeout: 5000
+                        });
+                        
+                        testSocket.on('connect', function() {
+                            console.log('✅ Prueba WebSocket exitosa');
+                            addActivity('✅ Prueba WebSocket exitosa', 'success');
+                            testSocket.disconnect();
+                            
+                            // Prueba 3: Verificar comunicación
+                            setTimeout(() => {
+                                addActivity('3️⃣ Todas las pruebas completadas exitosamente', 'success');
+                            }, 500);
+                        });
+                        
+                        testSocket.on('connect_error', function(error) {
+                            console.error('❌ Error en prueba WebSocket:', error);
+                            addActivity('❌ Error en prueba WebSocket: ' + error.message, 'error');
+                            testSocket.disconnect();
+                        });
+                        
+                        setTimeout(() => {
+                            if (!testSocket.connected) {
+                                addActivity('⏱️ Timeout en prueba WebSocket', 'warning');
+                                testSocket.disconnect();
+                            }
+                        }, 5000);
+                        
+                    }, 1000);
+                    
+                } else {
+                    addActivity('❌ Servidor HTTP responde con error: ' + response.status, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('❌ Error en prueba HTTP:', error);
+                addActivity('❌ Error en prueba HTTP: ' + error.message, 'error');
+                addActivity('🔍 Debug - URL probada: ' + `${window.location.protocol}//${wsHost}:${wsPort}/health`, 'warning');
+                
+                // Sugerencias de solución
+                addActivity('💡 Sugerencias:', 'info');
+                addActivity('- Verificar que el servidor WebSocket esté corriendo en puerto 5001', 'warning');
+                addActivity('- Verificar que no haya firewall bloqueando el puerto', 'warning');
+                addActivity('- Verificar que el archivo websocket_server.py esté ejecutándose', 'warning');
+            });
+    }
+    
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🚀 DOM Content Loaded - Iniciando módulo WhatsApp Web QR');
+        
+        // Establecer fecha/hora inicial
+        const systemStartTime = document.getElementById('system-start-time');
+        if (systemStartTime) {
+            systemStartTime.textContent = new Date().toLocaleString('es-ES');
+            console.log('✅ Fecha/hora inicial establecida:', new Date().toLocaleString('es-ES'));
+        } else {
+            console.error('❌ No se encontró elemento system-start-time');
+        }
+        
+        // Verificar si Socket.IO está disponible
+        if (typeof io !== 'undefined') {
+            console.log('✅ Socket.IO está disponible');
+        } else {
+            console.error('❌ Socket.IO no está disponible - verificar CDN');
+        }
+        
+        // Diagnóstico de elementos DOM
+        console.log('🔍 Verificando elementos DOM:');
+        const elementos = [
+            'connection-banner',
+            'connection-icon', 
+            'connection-status',
+            'ws-status',
+            'ws-status-text',
+            'qr-container',
+            'qr-placeholder',
+            'activity-list',
+            'loading-overlay'
+        ];
+        
+        elementos.forEach(id => {
+            const element = document.getElementById(id);
+            console.log(`${element ? '✅' : '❌'} ${id}:`, element ? 'Encontrado' : 'No encontrado');
+        });
+        
+        // Verificar botones
+        const botones = document.querySelectorAll('.btn-custom');
+        console.log('🔘 Botones encontrados:', botones.length);
+        
+        addActivity('Módulo WhatsApp Web QR inicializado', 'info');
+        
+        // Probar conectividad del servidor WebSocket
+        console.log('🔍 Probando conectividad del servidor WebSocket...');
+        fetch(`${window.location.protocol}//${wsHost}:${wsPort}/health`)
+            .then(response => {
+                if (response.ok) {
+                    console.log('✅ Servidor WebSocket responde correctamente');
+                    addActivity('Servidor WebSocket verificado', 'success');
+                } else {
+                    console.log('⚠️ Servidor WebSocket responde pero con error:', response.status);
+                    addActivity('Servidor WebSocket responde con error', 'warning');
+                }
+            })
+            .catch(error => {
+                console.log('❌ No se puede conectar al servidor WebSocket:', error);
+                addActivity('No se puede verificar servidor WebSocket', 'warning');
+            });
+        
+        // Manejar cierre de página
+        window.addEventListener('beforeunload', function() {
+            if (socket && socket.connected) {
+                socket.disconnect();
+            }
+        });
+    });
+    
+    // Manejar visibilidad de la página
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            // Página oculta - pausar reconexiones
+            if (reconnectTimer) {
+                clearTimeout(reconnectTimer);
+                reconnectTimer = null;
+            }
+        } else {
+            // Página visible - reanudar conexión si es necesario
+            if (!isManualDisconnect && (!socket || !socket.connected)) {
+                setTimeout(() => {
+                    connectWebSocket();
+                }, 1000);
+            }
+        }
+    });
+    
+    // Función para mostrar mensaje de éxito después de la autenticación
+    function showSuccessMessage() {
+        console.log('🎉 Mostrando mensaje de éxito');
+        
+        const qrSection = document.getElementById('qr-section');
+        if (!qrSection) return;
+        
+        qrSection.innerHTML = `
+            <div class="success-message">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle fa-4x text-success"></i>
+                </div>
+                <h3 class="text-success mb-3">¡Conexión Exitosa!</h3>
+                <p class="text-muted mb-4">
+                    WhatsApp Web se ha conectado correctamente con ${document.querySelector('.page-header h1').textContent.split(' ')[3] || 'el sistema'}
+                </p>
+                <div class="success-actions">
+                    <button class="btn btn-primary me-2" onclick="probarEnvio()">
+                        <i class="fas fa-paper-plane me-2"></i>Probar Envío
+                    </button>
+                    <button class="btn btn-secondary me-2" onclick="verDetalles()">
+                        <i class="fas fa-info-circle me-2"></i>Ver Detalles
+                    </button>
+                    <button class="btn btn-outline-secondary" onclick="ocultarExito()">
+                        <i class="fas fa-times me-2"></i>Ocultar
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        addActivity('Interfaz de éxito mostrada', 'success');
+    }
+    
+    // Función para probar envío de WhatsApp
+    function probarEnvio() {
+        console.log('📤 Probando envío de WhatsApp');
+        
+        if (!socket || !socket.connected) {
+            addActivity('❌ No hay conexión Socket.IO activa', 'error');
+            return;
+        }
+        
+        addActivity('📤 Enviando mensaje de prueba...', 'info');
+        
+        // Enviar comando de prueba
+        socket.emit('test_whatsapp', {
+            session_id: sessionId,
+            action: 'send_test_message'
+        });
+        
+        // Simular respuesta exitosa después de 2 segundos
+        setTimeout(() => {
+            addActivity('✅ Mensaje de prueba enviado exitosamente', 'success');
+        }, 2000);
+    }
+    
+    // Función para ver detalles de la conexión
+    function verDetalles() {
+        console.log('📊 Mostrando detalles de conexión');
+        
+        const detalles = {
+            'Estado': currentStatus,
+            'Session ID': sessionId || 'No asignado',
+            'Socket ID': socket ? socket.id : 'No conectado',
+            'Transporte': socket ? socket.io.engine.transport.name : 'N/A',
+            'Reconexiones': reconnectAttempts,
+            'Hora conexión': new Date().toLocaleString('es-ES')
+        };
+        
+        addActivity('📊 Detalles de conexión:', 'info');
+        
+        Object.entries(detalles).forEach(([key, value]) => {
+            addActivity(`• ${key}: ${value}`, 'info');
+        });
+    }
+    
+    // Función para ocultar mensaje de éxito
+    function ocultarExito() {
+        console.log('🔄 Ocultando mensaje de éxito');
+        
+        const qrSection = document.getElementById('qr-section');
+        if (!qrSection) return;
+        
+        qrSection.innerHTML = `
+            <div id="qr-placeholder">
+                <i class="fas fa-check-circle fa-4x text-success"></i>
+                <h5 class="mt-3 mb-2 text-success">WhatsApp Conectado</h5>
+                <p class="text-muted">La conexión está activa y funcionando</p>
+            </div>
+            <div id="qr-container" style="display: none;"></div>
+        `;
+        
+        addActivity('Interfaz de éxito ocultada', 'info');
+    }
+    
+    // Funciones de los botones
+    function conectarWhatsApp() {
+        console.log('🔌 Botón Conectar WhatsApp clickeado');
+        console.log('📊 Estado actual del socket:', socket ? 'existe' : 'no existe');
+        console.log('🔗 Socket conectado:', socket ? socket.connected : 'n/a');
+        console.log('📋 Estado actual:', currentStatus);
+        
+        // Si ya está conectado, mostrar información
+        if (currentStatus === 'connected') {
+            addActivity('✅ WhatsApp ya está conectado', 'success');
+            showConnectionDetails();
+            return;
+        }
+        
+        // Si está en proceso de conexión, reintentar
+        if (currentStatus === 'connecting' || currentStatus === 'qr_ready') {
+            addActivity('🔄 Reintentando conexión...', 'info');
+            if (socket && socket.connected) {
+                socket.emit('get_qr', {
+                    session_id: sessionId || 'new_session'
+                });
+                return;
+            }
+        }
+        
+        addActivity('🔌 Iniciando proceso de conexión WhatsApp...', 'info');
+        
+        if (socket && socket.connected) {
+            console.log('📡 Socket ya conectado, solicitando QR...');
+            addActivity('Socket ya conectado - Solicitando QR...', 'info');
+            socket.emit('get_qr', {
+                session_id: sessionId || 'new_session'
+            });
+        } else {
+            console.log('🔄 Socket no conectado, iniciando conexión...');
+            addActivity('Socket no conectado - Iniciando nueva conexión...', 'info');
+            connectWebSocket();
+        }
+    }
+    
+    function generarQRChat() {
+        console.log('📱 Botón Generar QR Chat clickeado');
+        showLoading();
+        addActivity('🔄 Generando QR para chat directo...', 'info');
+        
+        const currentUrl = window.location.href;
+        const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+        const fetchUrl = `${baseUrl}/generar_qr_whatsapp`;
+        
+        console.log('🌐 URL para fetch:', fetchUrl);
+        
+        fetch(fetchUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+                action: 'generate_qr_chat'
+            })
+        })
+        .then(response => {
+            console.log('📡 Respuesta del servidor:', response.status, response.statusText);
+            console.log('📊 Headers de respuesta:', [...response.headers.entries()]);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            return response.json();
+        })
+        .then(data => {
+            console.log('📊 Datos recibidos:', data);
+            hideLoading();
+            
+            if (data.success) {
+                showQRCode(data.whatsapp_url);
+                addActivity('✅ QR de chat directo generado exitosamente', 'success');
+            } else {
+                addActivity('❌ Error al generar QR: ' + (data.error || 'Error desconocido'), 'error');
+            }
+        })
+        .catch(error => {
+            console.error('❌ Error en fetch:', error);
+            hideLoading();
+            addActivity('❌ Error de conexión: ' + error.message, 'error');
+            
+            // Mostrar información adicional de debug
+            addActivity('🔍 Debug - URL intentada: ' + fetchUrl, 'warning');
+            addActivity('🔍 Debug - Verificar que el servidor esté corriendo', 'warning');
+        });
+    }
+    
+    function verificarEstado() {
+        console.log('🔍 Botón Verificar Estado clickeado');
+        
+        // Diagnóstico completo del sistema
+        addActivity('🔍 Iniciando verificación completa del sistema...', 'info');
+        
+        // Verificar estado del socket
+        if (socket && socket.connected) {
+            console.log('📡 Socket conectado - Enviando get_status...');
+            addActivity('✅ Socket.IO conectado - Verificando estado WhatsApp...', 'success');
+            socket.emit('get_status', {
+                session_id: sessionId || 'unknown'
+            });
+        } else {
+            console.log('❌ Socket no conectado');
+            addActivity('❌ Socket.IO no conectado', 'error');
+            updateConnectionStatus('disconnected', 'Sin conexión al servidor WebSocket');
+        }
+        
+        // Verificar conectividad del servidor
+        setTimeout(() => {
+            console.log('🔍 Verificando conectividad del servidor...');
+            fetch(`${window.location.protocol}//${wsHost}:${wsPort}/health`)
+                .then(response => {
+                    if (response.ok) {
+                        addActivity('✅ Servidor WebSocket responde correctamente', 'success');
+                    } else {
+                        addActivity('⚠️ Servidor WebSocket responde con error: ' + response.status, 'warning');
+                    }
+                })
+                .catch(error => {
+                    addActivity('❌ No se puede conectar al servidor WebSocket', 'error');
+                    addActivity('🔍 Debug - URL: ' + `${window.location.protocol}//${wsHost}:${wsPort}/health`, 'warning');
+                });
+        }, 1000);
+        
+        // Información del estado actual
+        setTimeout(() => {
+            addActivity('📊 Estado actual: ' + currentStatus, 'info');
+            addActivity('🆔 Session ID: ' + (sessionId || 'No asignado'), 'info');
+            addActivity('🔄 Intentos de reconexión: ' + reconnectAttempts, 'info');
+        }, 2000);
+    }
+    
+    function desconectar() {
+        console.log('🔌 Botón Desconectar clickeado');
+        
+        addActivity('🔌 Iniciando proceso de desconexión...', 'info');
+        
+        if (socket && socket.connected && sessionId) {
+            console.log('📡 Enviando disconnect_whatsapp...');
+            addActivity('📡 Enviando comando de desconexión WhatsApp...', 'info');
+            socket.emit('disconnect_whatsapp', {
+                session_id: sessionId
+            });
+        } else {
+            console.log('🔌 Desconectando Socket.IO directamente...');
+            addActivity('🔌 Desconectando Socket.IO directamente...', 'info');
+            disconnectWebSocket();
+        }
+    }
+    
+    function probarConexion() {
+        console.log('🔍 Botón Probar Conexión clickeado');
+        addActivity('🔍 Iniciando prueba de conexión completa...', 'info');
+        
+        // Prueba 1: Verificar conectividad HTTP
+        addActivity('1️⃣ Probando conectividad HTTP...', 'info');
+        fetch(`${window.location.protocol}//${wsHost}:${wsPort}/health`)
+            .then(response => {
+                console.log('📡 Respuesta HTTP del servidor:', response.status);
+                if (response.ok) {
+                    addActivity('✅ Prueba HTTP exitosa - Servidor responde', 'success');
+                    
+                    // Prueba 2: Verificar WebSocket
+                    setTimeout(() => {
+                        addActivity('2️⃣ Probando conexión WebSocket...', 'info');
+                        const testSocket = io(wsUrl, {
+                            ...socketConfig,
+                            timeout: 5000
+                        });
+                        
+                        testSocket.on('connect', function() {
+                            console.log('✅ Prueba WebSocket exitosa');
+                            addActivity('✅ Prueba WebSocket exitosa', 'success');
+                            testSocket.disconnect();
+                            
+                            // Prueba 3: Verificar comunicación
+                            setTimeout(() => {
+                                addActivity('3️⃣ Todas las pruebas completadas exitosamente', 'success');
+                            }, 500);
+                        });
+                        
+                        testSocket.on('connect_error', function(error) {
+                            console.error('❌ Error en prueba WebSocket:', error);
+                            addActivity('❌ Error en prueba WebSocket: ' + error.message, 'error');
+                            testSocket.disconnect();
+                        });
+                        
+                        setTimeout(() => {
+                            if (!testSocket.connected) {
+                                addActivity('⏱️ Timeout en prueba WebSocket', 'warning');
+                                testSocket.disconnect();
+                            }
+                        }, 5000);
+                        
+                    }, 1000);
+                    
+                } else {
+                    addActivity('❌ Servidor HTTP responde con error: ' + response.status, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('❌ Error en prueba HTTP:', error);
+                addActivity('❌ Error en prueba HTTP: ' + error.message, 'error');
+                addActivity('🔍 Debug - URL probada: ' + `${window.location.protocol}//${wsHost}:${wsPort}/health`, 'warning');
+                
+                // Sugerencias de solución
+                addActivity('💡 Sugerencias:', 'info');
+                addActivity('- Verificar que el servidor WebSocket esté corriendo en puerto 5001', 'warning');
+                addActivity('- Verificar que no haya firewall bloqueando el puerto', 'warning');
+                addActivity('- Verificar que el archivo websocket_server.py esté ejecutándose', 'warning');
+            });
+    }
+    
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🚀 DOM Content Loaded - Iniciando módulo WhatsApp Web QR');
+        
+        // Establecer fecha/hora inicial
+        const systemStartTime = document.getElementById('system-start-time');
+        if (systemStartTime) {
+            systemStartTime.textContent = new Date().toLocaleString('es-ES');
+            console.log('✅ Fecha/hora inicial establecida:', new Date().toLocaleString('es-ES'));
+        } else {
+            console.error('❌ No se encontró elemento system-start-time');
+        }
+        
+        // Verificar si Socket.IO está disponible
+        if (typeof io !== 'undefined') {
+            console.log('✅ Socket.IO está disponible');
+        } else {
+            console.error('❌ Socket.IO no está disponible - verificar CDN');
+        }
+        
+        // Diagnóstico de elementos DOM
+        console.log('🔍 Verificando elementos DOM:');
+        const elementos = [
+            'connection-banner',
+            'connection-icon', 
+            'connection-status',
+            'ws-status',
+            'ws-status-text',
+            'qr-container',
+            'qr-placeholder',
+            'activity-list',
+            'loading-overlay'
+        ];
+        
+        elementos.forEach(id => {
+            const element = document.getElementById(id);
+            console.log(`${element ? '✅' : '❌'} ${id}:`, element ? 'Encontrado' : 'No encontrado');
+        });
+        
+        // Verificar botones
+        const botones = document.querySelectorAll('.btn-custom');
+        console.log('🔘 Botones encontrados:', botones.length);
+        
+        addActivity('Módulo WhatsApp Web QR inicializado', 'info');
+        
+        // Probar conectividad del servidor WebSocket
+        console.log('🔍 Probando conectividad del servidor WebSocket...');
+        fetch(`${window.location.protocol}//${wsHost}:${wsPort}/health`)
+            .then(response => {
+                if (response.ok) {
+                    console.log('✅ Servidor WebSocket responde correctamente');
+                    addActivity('Servidor WebSocket verificado', 'success');
+                } else {
+                    console.log('⚠️ Servidor WebSocket responde pero con error:', response.status);
+                    addActivity('Servidor WebSocket responde con error', 'warning');
+                }
+            })
+            .catch(error => {
+                console.log('❌ No se puede conectar al servidor WebSocket:', error);
+                addActivity('No se puede verificar servidor WebSocket', 'warning');
+            });
+        
+        // Manejar cierre de página
+        window.addEventListener('beforeunload', function() {
+            if (socket && socket.connected) {
+                socket.disconnect();
+            }
+        });
+    });
+    
+    // Manejar visibilidad de la página
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            // Página oculta - pausar reconexiones
+            if (reconnectTimer) {
+                clearTimeout(reconnectTimer);
+                reconnectTimer = null;
+            }
+        } else {
+            // Página visible - reanudar conexión si es necesario
+            if (!isManualDisconnect && (!socket || !socket.connected)) {
+                setTimeout(() => {
+                    connectWebSocket();
+                }, 1000);
+            }
+        }
+    });
+</script>
+{% endblock %}

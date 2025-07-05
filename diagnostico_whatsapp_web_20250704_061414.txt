@@ -1,0 +1,50 @@
+DIAGNÓSTICO WHATSAPP WEB QR - 2025-07-04 06:14:14.958780
+============================================================
+🖥️  INFORMACIÓN DEL SISTEMA
+==================================================
+OS: posix
+Python: 3.12.3 (main, Jun 18 2025, 17:59:45) [GCC 13.3.0]
+Directorio actual: /mnt/c/Users/PC/PYTHON/Auraai2
+
+🔌 PUERTOS
+--------------------
+❌ Puerto 5000 (Flask): No disponible
+✅ Puerto 5001 (WebSocket): 200
+
+📁 ARCHIVOS NECESARIOS
+==================================================
+✅ websocket_server.py (16436 bytes)
+✅ clientes/aura/templates/panel_cliente_qr_whatsapp_web/index_websocket.html (83396 bytes)
+✅ clientes/aura/templates/base_cliente.html (1864 bytes)
+✅ clientes/aura/routes/panel_cliente_qr_whatsapp_web/__init__.py (10257 bytes)
+
+📦 DEPENDENCIAS DE PYTHON
+==================================================
+✅ flask
+✅ flask-socketio
+✅ flask-cors
+✅ qrcode
+❌ python-socketio - NO INSTALADO
+✅ requests
+✅ gunicorn
+
+🔌 SERVIDOR WEBSOCKET
+==================================================
+✅ Servidor WebSocket activo
+   Status: ok
+   Sesiones: {'authenticated': 1, 'pending': 0, 'qr_ready': 0, 'total_sessions': 1}
+
+🛣️  RUTAS DE FLASK
+==================================================
+❌ http://localhost:5000/panel_cliente_qr_whatsapp_web/: Servidor no disponible
+❌ http://localhost:5000/health: Servidor no disponible
+❌ http://localhost:5000/panel_cliente_qr_whatsapp_web/index_websocket: Servidor no disponible
+
+🎨 FRONTEND
+==================================================
+✅ Archivo frontend encontrado
+✅ Socket.IO: OK
+✅ Funciones JS: OK
+✅ Eventos Socket: OK
+✅ Botones: OK
+✅ QR Section: OK
