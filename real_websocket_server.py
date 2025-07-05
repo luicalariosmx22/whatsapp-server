@@ -15,7 +15,7 @@ import io
 import base64
 from datetime import datetime
 import logging
-from flask import Flask, request
+from flask import Flask, request, render_template
 from flask_socketio import SocketIO, emit, disconnect, join_room, leave_room
 from flask_cors import CORS
 
@@ -785,31 +785,66 @@ def handle_disconnect_whatsapp(data):
         })
 
 # Rutas HTTP
-@app.route('/health')
-def health_check():
-    """Verificación de salud del servidor REAL"""
-    stats = ws_manager.get_active_sessions()
-    return {
-        'status': 'ok',
-        'type': 'real_whatsapp_server',
-        'timestamp': datetime.now().isoformat(),
-        'sessions': stats,
-        'selenium_ready': True
-    }
+@app.route('/')
+def index():
+    """Página principal del servidor"""
+    try:
+        # Intentar servir la página HTML si existe
+        return render_template('index.html')
+    except:
+        # Si no hay templates, devolver JSON
+        return {
+            'status': 'running',
+            'service': 'WhatsApp Web Real Server',
+            'version': '1.0.0',
+            'endpoints': {
+                'health': '/health',
+                'stats': '/stats',
+                'websocket': '/socket.io/',
+                'documentation': '/docs'
+            },
+            'message': '🚀 Servidor WebSocket REAL de WhatsApp Web funcionando correctamente',
+            'timestamp': datetime.now().isoformat()
+        }
 
-@app.route('/stats')
-def get_stats():
-    """Obtener estadísticas del servidor REAL"""
-    stats = ws_manager.get_active_sessions()
+@app.route('/favicon.ico')
+def favicon():
+    """Favicon para el navegador"""
+    return '', 204
+
+@app.route('/docs')
+def docs():
+    """Documentación básica del API"""
     return {
-        'active_sessions': stats,
-        'server_info': {
-            'host': WS_HOST,
-            'port': WS_PORT,
-            'debug': DEBUG,
-            'type': 'real_whatsapp_server'
+        'title': 'WhatsApp Web Real Server API',
+        'description': 'Servidor WebSocket para conexiones reales a WhatsApp Web',
+        'websocket_events': {
+            'connect': 'Conectar al servidor',
+            'get_qr': 'Generar código QR real',
+            'get_status': 'Obtener estado de sesión',
+            'test_whatsapp': 'Probar funcionalidad'
+        },
+        'http_endpoints': {
+            '/': 'Información del servidor',
+            '/health': 'Estado de salud',
+            '/stats': 'Estadísticas de sesiones',
+            '/docs': 'Esta documentación'
+        },
+        'example_usage': {
+            'javascript': '''
+            const socket = io('wss://tu-servidor.railway.app');
+            socket.on('connect', () => {
+                console.log('Conectado al servidor');
+                socket.emit('get_qr', {});
+            });
+            socket.on('qr_code', (data) => {
+                console.log('QR recibido:', data);
+            });
+            '''
         }
     }
+
+# ...existing code...
 
 # Tarea de limpieza periódica
 def cleanup_sessions():

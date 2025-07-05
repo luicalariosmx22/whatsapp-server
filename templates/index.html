@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 WhatsApp Web Real Server</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 600px;
+            width: 90%;
+        }
+        
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .status {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        
+        .status-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+        
+        .endpoints {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .endpoint {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .endpoint-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .endpoint-url {
+            font-family: 'Courier New', monospace;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.5rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .footer {
+            margin-top: 2rem;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🚀</div>
+        <h1 class="title">WhatsApp Web Real Server</h1>
+        <p class="subtitle">Servidor WebSocket para conexiones reales a WhatsApp Web</p>
+        
+        <div class="status">
+            <span class="status-icon pulse">✅</span>
+            <strong>Servidor funcionando correctamente</strong>
+        </div>
+        
+        <div class="endpoints">
+            <div class="endpoint">
+                <div class="endpoint-title">📊 Estado de Salud</div>
+                <div class="endpoint-url">/health</div>
+            </div>
+            <div class="endpoint">
+                <div class="endpoint-title">📈 Estadísticas</div>
+                <div class="endpoint-url">/stats</div>
+            </div>
+            <div class="endpoint">
+                <div class="endpoint-title">🔗 WebSocket</div>
+                <div class="endpoint-url">/socket.io/</div>
+            </div>
+            <div class="endpoint">
+                <div class="endpoint-title">📚 Documentación</div>
+                <div class="endpoint-url">/docs</div>
+            </div>
+        </div>
+        
+        <div>
+            <a href="/health" class="btn">🩺 Salud</a>
+            <a href="/stats" class="btn">📊 Stats</a>
+            <a href="/docs" class="btn">📖 Docs</a>
+        </div>
+        
+        <div class="footer">
+            <p>🌟 Desplegado en Railway</p>
+            <p><span id="timestamp">Cargando...</span></p>
+        </div>
+    </div>
+    
+    <script>
+        // Mostrar timestamp actual
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+        
+        // Verificar estado del servidor cada 30 segundos
+        setInterval(async () => {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                if (data.status === 'healthy') {
+                    document.querySelector('.status').style.background = 'rgba(34, 197, 94, 0.2)';
+                    document.querySelector('.status').style.borderColor = 'rgba(34, 197, 94, 0.3)';
+                } else {
+                    document.querySelector('.status').style.background = 'rgba(239, 68, 68, 0.2)';
+                    document.querySelector('.status').style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                }
+            } catch (error) {
+                console.log('Error verificando estado:', error);
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
