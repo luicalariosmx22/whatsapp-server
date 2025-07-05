@@ -27,3 +27,17 @@ clientes/aura/templates/panel_cliente_tareas/dominio brenda Ibarra.pdf
 *.sql
 *.md
 /venv_linux
+
+# Chrome y Selenium temporales
+/tmp/chrome_user_data_*
+chromedriver
+chrome_debug.log
+selenium-debug.log
+
+# Railway deployment
+.railway/
+railway.json
+
+# Docker
+.docker/
+docker-compose.override.yml

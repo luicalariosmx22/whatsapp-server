@@ -28,21 +28,55 @@ def check_chrome_railway():
         '/usr/bin/google-chrome',
         '/usr/bin/chromium-browser', 
         '/usr/bin/chromium',
-        '/usr/bin/chrome'
+        '/usr/bin/chrome',
+        '/usr/bin/google-chrome-stable'
     ]
     
     for path in chrome_paths:
         try:
             result = subprocess.run([path, '--version'], 
-                                  capture_output=True, text=True)
+                                  capture_output=True, text=True, timeout=10)
             if result.returncode == 0:
                 print(f"✅ Chrome encontrado en {path}: {result.stdout.strip()}")
+                os.environ['CHROME_PATH'] = path
                 return True
-        except FileNotFoundError:
+        except (FileNotFoundError, subprocess.TimeoutExpired):
             continue
     
-    print("❌ Chrome no encontrado en Railway")
-    return False
+    # Si no encontramos Chrome, intentar instalarlo
+    print("⚠️  Chrome no encontrado, intentando configurar...")
+    return install_chrome_railway()
+
+def install_chrome_railway():
+    """Instalar Chrome en Railway si no está disponible"""
+    print("🔧 Intentando configurar Chrome para Railway...")
+    
+    try:
+        # Verificar si tenemos chromium-browser
+        result = subprocess.run(['which', 'chromium-browser'], 
+                              capture_output=True, text=True)
+        if result.returncode == 0:
+            chrome_path = result.stdout.strip()
+            print(f"✅ Chromium encontrado en: {chrome_path}")
+            os.environ['CHROME_PATH'] = chrome_path
+            return True
+            
+        # Verificar si tenemos google-chrome
+        result = subprocess.run(['which', 'google-chrome'], 
+                              capture_output=True, text=True)
+        if result.returncode == 0:
+            chrome_path = result.stdout.strip()
+            print(f"✅ Google Chrome encontrado en: {chrome_path}")
+            os.environ['CHROME_PATH'] = chrome_path
+            return True
+            
+        print("❌ No se pudo encontrar Chrome en Railway")
+        print("💡 Sugerencia: Agregar nixpacks.toml para instalar Chrome")
+        return False
+        
+    except Exception as e:
+        print(f"❌ Error verificando Chrome: {e}")
+        return False
 
 def main():
     """Función principal para Railway"""
@@ -53,9 +87,17 @@ def main():
     setup_railway_environment()
     
     # Verificar Chrome
-    if not check_chrome_railway():
+    chrome_available = check_chrome_railway()
+    if not chrome_available:
         print("❌ Error: Chrome no está disponible")
-        sys.exit(1)
+        print("🔧 Opciones:")
+        print("   1. Usar nixpacks.toml para instalar Chrome")
+        print("   2. Configurar buildpack de Chrome")
+        print("   3. Usar modo sin navegador (solo API)")
+        
+        # Continuar sin Chrome en modo API
+        print("⚠️  Continuando en modo API sin navegador...")
+        os.environ['NO_CHROME_MODE'] = 'true'
     
     print("🌐 Configuración:")
     print(f"   Puerto: {os.environ.get('WS_PORT')}")

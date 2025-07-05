@@ -111,6 +111,11 @@ class RealWhatsAppWebManager:
     def setup_chrome_driver(self):
         """Configurar driver de Chromium para WhatsApp Web"""
         try:
+            # Verificar si estamos en modo sin Chrome
+            if os.getenv('NO_CHROME_MODE') == 'true':
+                logger.warning("🚫 Modo sin Chrome activado - Chrome no disponible")
+                return None
+            
             chrome_options = Options()
             
             # Configuraciones para WhatsApp Web
@@ -155,6 +160,10 @@ class RealWhatsAppWebManager:
                     '/opt/google/chrome/chrome'
                 ]
                 
+                # Verificar si hay un path específico configurado
+                if os.getenv('CHROME_PATH'):
+                    chrome_paths.insert(0, os.getenv('CHROME_PATH'))
+                
                 chrome_path = None
                 for path in chrome_paths:
                     if os.path.exists(path):
@@ -164,6 +173,9 @@ class RealWhatsAppWebManager:
                 if chrome_path:
                     chrome_options.binary_location = chrome_path
                     logger.info(f"Usando Chrome en: {chrome_path}")
+                else:
+                    logger.error("❌ No se encontró Chrome en ninguna ruta")
+                    return None
                 
                 # Configurar servicio con ChromeDriver
                 service_paths = [
@@ -179,7 +191,7 @@ class RealWhatsAppWebManager:
                         break
                 
                 if not service:
-                    logger.info("ChromeDriver no encontrado en rutas del sistema")
+                    logger.error("❌ ChromeDriver no encontrado en rutas del sistema")
                     return None
                 
             except Exception as e:
@@ -193,11 +205,11 @@ class RealWhatsAppWebManager:
             # Ejecutar script para evitar detección
             driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
             
-            logger.info("Driver de Chromium configurado exitosamente")
+            logger.info("✅ Driver de Chromium configurado exitosamente")
             return driver
             
         except Exception as e:
-            logger.error(f"Error configurando driver: {e}")
+            logger.error(f"❌ Error configurando driver: {e}")
             return None
             
     def start_whatsapp_session(self, session_id):
@@ -209,10 +221,18 @@ class RealWhatsAppWebManager:
                 
             logger.info(f"Iniciando sesión real de WhatsApp Web: {session_id}")
             
+            # Verificar si Chrome está disponible
+            if os.getenv('NO_CHROME_MODE') == 'true':
+                logger.warning("🚫 Chrome no disponible - enviando QR simulado")
+                self.send_mock_qr_code(session_id)
+                return True
+            
             # Crear driver
             driver = self.setup_chrome_driver()
             if not driver:
-                return False
+                logger.error("❌ No se pudo crear el driver de Chrome")
+                self.send_mock_qr_code(session_id)
+                return True
                 
             # Guardar driver en la sesión
             self.update_session_status(session_id, 'connecting', driver=driver)
@@ -228,7 +248,8 @@ class RealWhatsAppWebManager:
             
         except Exception as e:
             logger.error(f"Error iniciando sesión WhatsApp: {e}")
-            return False
+            self.send_mock_qr_code(session_id)
+            return True
             
     def wait_for_qr_code(self, session_id, driver):
         """Esperar y capturar código QR real"""
@@ -496,6 +517,55 @@ class RealWhatsAppWebManager:
                 'qr_ready': sum(1 for s in self.sessions.values() if s.get('status') == 'qr_ready'),
                 'connecting': sum(1 for s in self.sessions.values() if s.get('status') == 'connecting')
             }
+    
+    def send_mock_qr_code(self, session_id):
+        """Enviar código QR simulado cuando Chrome no está disponible"""
+        try:
+            logger.info(f"Enviando QR simulado para sesión: {session_id}")
+            
+            # Crear QR simulado con mensaje
+            qr_text = f"WhatsApp Web no disponible - Chrome no encontrado\nSession: {session_id}\nTime: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+            
+            # Generar QR code
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=10,
+                border=4,
+            )
+            qr.add_data(qr_text)
+            qr.make(fit=True)
+            
+            # Crear imagen
+            img = qr.make_image(fill_color="black", back_color="white")
+            
+            # Convertir a base64
+            img_buffer = io.BytesIO()
+            img.save(img_buffer, format='PNG')
+            img_buffer.seek(0)
+            qr_data = base64.b64encode(img_buffer.getvalue()).decode()
+            qr_data_url = f"data:image/png;base64,{qr_data}"
+            
+            # Actualizar sesión
+            self.update_session_status(session_id, 'qr_ready', qr_data=qr_data_url)
+            
+            # Enviar QR al cliente
+            socketio.emit('qr_code', {
+                'session_id': session_id,
+                'qr_data': qr_data_url,
+                'message': '⚠️ Chrome no disponible - QR simulado',
+                'error': 'Chrome no está instalado en Railway'
+            })
+            
+            logger.info(f"QR simulado enviado para sesión: {session_id}")
+            
+        except Exception as e:
+            logger.error(f"Error enviando QR simulado: {e}")
+            socketio.emit('error', {
+                'session_id': session_id,
+                'message': 'Error generando QR simulado',
+                'error': str(e)
+            })
 
 # Instancia global del manager REAL
 ws_manager = RealWhatsAppWebManager()
