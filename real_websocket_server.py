@@ -814,41 +814,82 @@ def favicon():
 
 @app.route('/docs')
 def docs():
-    """Documentación básica del API"""
-    return {
-        'title': 'WhatsApp Web Real Server API',
-        'description': 'Servidor WebSocket para conexiones reales a WhatsApp Web',
-        'websocket_events': {
-            'connect': 'Conectar al servidor',
-            'get_qr': 'Generar código QR real',
-            'get_status': 'Obtener estado de sesión',
-            'test_whatsapp': 'Probar funcionalidad'
-        },
-        'http_endpoints': {
-            '/': 'Información del servidor',
-            '/health': 'Estado de salud',
-            '/stats': 'Estadísticas de sesiones',
-            '/docs': 'Esta documentación'
-        },
-        'example_usage': {
-            'javascript': '''
-            const socket = io('wss://tu-servidor.railway.app');
-            socket.on('connect', () => {
-                console.log('Conectado al servidor');
-                socket.emit('get_qr', {});
-            });
-            socket.on('qr_code', (data) => {
-                console.log('QR recibido:', data);
-            });
-            '''
+    """Página de documentación del API"""
+    try:
+        return render_template('docs.html')
+    except:
+        # Fallback JSON si no hay template
+        return {
+            'title': 'WhatsApp Web Real Server API',
+            'description': 'Servidor WebSocket para conexiones reales a WhatsApp Web',
+            'websocket_events': {
+                'connect': 'Conectar al servidor',
+                'get_qr': 'Generar código QR real',
+                'get_status': 'Obtener estado de sesión',
+                'test_whatsapp': 'Probar funcionalidad'
+            },
+            'http_endpoints': {
+                '/': 'Información del servidor',
+                '/health': 'Estado de salud',
+                '/stats': 'Estadísticas de sesiones',
+                '/docs': 'Esta documentación'
+            },
+            'example_usage': {
+                'javascript': '''
+                const socket = io('wss://tu-servidor.railway.app');
+                socket.on('connect', () => {
+                    console.log('Conectado al servidor');
+                    socket.emit('get_qr', {});
+                });
+                socket.on('qr_code', (data) => {
+                    console.log('QR recibido:', data);
+                });
+                '''
+            }
         }
-    }
 
 @app.route('/health')
 def health():
-    """Endpoint de salud del servidor"""
+    """Página de salud del servidor"""
+    try:
+        return render_template('health.html')
+    except:
+        # Fallback JSON si no hay template
+        chrome_available = os.getenv('NO_CHROME_MODE') != 'true'
+        return {
+            'status': 'healthy',
+            'service': 'WhatsApp Web Real Server',
+            'timestamp': datetime.now().isoformat(),
+            'chrome_available': chrome_available,
+            'active_sessions': len(ws_manager.sessions),
+            'uptime': 'running',
+            'environment': 'railway' if os.getenv('RAILWAY_ENVIRONMENT') else 'local'
+        }
+
+@app.route('/stats')
+def stats():
+    """Página de estadísticas del servidor"""
+    try:
+        return render_template('stats.html')
+    except:
+        # Fallback JSON si no hay template
+        session_stats = ws_manager.get_active_sessions()
+        return {
+            'service': 'WhatsApp Web Real Server',
+            'timestamp': datetime.now().isoformat(),
+            'sessions': session_stats,
+            'server_info': {
+                'chrome_available': os.getenv('NO_CHROME_MODE') != 'true',
+                'environment': 'railway' if os.getenv('RAILWAY_ENVIRONMENT') else 'local',
+                'debug_mode': DEBUG
+            }
+        }
+
+# API Routes (JSON)
+@app.route('/api/health')
+def api_health():
+    """API endpoint para estado de salud"""
     chrome_available = os.getenv('NO_CHROME_MODE') != 'true'
-    
     return {
         'status': 'healthy',
         'service': 'WhatsApp Web Real Server',
@@ -859,11 +900,10 @@ def health():
         'environment': 'railway' if os.getenv('RAILWAY_ENVIRONMENT') else 'local'
     }
 
-@app.route('/stats')
-def stats():
-    """Estadísticas del servidor"""
+@app.route('/api/stats')
+def api_stats():
+    """API endpoint para estadísticas"""
     session_stats = ws_manager.get_active_sessions()
-    
     return {
         'service': 'WhatsApp Web Real Server',
         'timestamp': datetime.now().isoformat(),
