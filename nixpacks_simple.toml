@@ -1,0 +1,15 @@
+[phases.setup]
+aptPkgs = [
+    "chromium-browser",
+    "chromium-chromedriver",
+    "xvfb"
+]
+
+[phases.build]
+cmds = [
+    "ln -sf /usr/bin/chromedriver /usr/local/bin/chromedriver",
+    "pip install -r requirements.txt"
+]
+
+[start]
+cmd = "python start_railway.py"
