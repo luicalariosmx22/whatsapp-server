@@ -844,7 +844,36 @@ def docs():
         }
     }
 
-# ...existing code...
+@app.route('/health')
+def health():
+    """Endpoint de salud del servidor"""
+    chrome_available = os.getenv('NO_CHROME_MODE') != 'true'
+    
+    return {
+        'status': 'healthy',
+        'service': 'WhatsApp Web Real Server',
+        'timestamp': datetime.now().isoformat(),
+        'chrome_available': chrome_available,
+        'active_sessions': len(ws_manager.sessions),
+        'uptime': 'running',
+        'environment': 'railway' if os.getenv('RAILWAY_ENVIRONMENT') else 'local'
+    }
+
+@app.route('/stats')
+def stats():
+    """Estadísticas del servidor"""
+    session_stats = ws_manager.get_active_sessions()
+    
+    return {
+        'service': 'WhatsApp Web Real Server',
+        'timestamp': datetime.now().isoformat(),
+        'sessions': session_stats,
+        'server_info': {
+            'chrome_available': os.getenv('NO_CHROME_MODE') != 'true',
+            'environment': 'railway' if os.getenv('RAILWAY_ENVIRONMENT') else 'local',
+            'debug_mode': DEBUG
+        }
+    }
 
 # Tarea de limpieza periódica
 def cleanup_sessions():
