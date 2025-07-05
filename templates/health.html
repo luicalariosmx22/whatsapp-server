@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🩺 Health Check - WhatsApp Server</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .header {
+            margin-bottom: 2rem;
+        }
+        
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .health-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .health-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .health-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .health-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .health-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .health-description {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 0.5rem;
+        }
+        
+        .status-healthy {
+            border-color: rgba(34, 197, 94, 0.3);
+            background: rgba(34, 197, 94, 0.1);
+        }
+        
+        .status-warning {
+            border-color: rgba(251, 191, 36, 0.3);
+            background: rgba(251, 191, 36, 0.1);
+        }
+        
+        .status-error {
+            border-color: rgba(239, 68, 68, 0.3);
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .timestamp {
+            margin: 2rem 0 1rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+        
+        .auto-refresh {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo pulse">🩺</div>
+            <h1 class="title">Health Check</h1>
+            <p class="subtitle">Estado de salud del servidor WhatsApp Web</p>
+        </div>
+        
+        <div class="health-grid" id="healthGrid">
+            <!-- Se llenará dinámicamente -->
+        </div>
+        
+        <div class="timestamp" id="timestamp">
+            Cargando estado del servidor...
+        </div>
+        
+        <div class="nav-buttons">
+            <a href="/" class="btn">🏠 Inicio</a>
+            <a href="/stats" class="btn">📊 Estadísticas</a>
+            <a href="/docs" class="btn">📖 Documentación</a>
+            <a href="#" class="btn" onclick="refreshHealth()">🔄 Actualizar</a>
+        </div>
+        
+        <div class="auto-refresh">
+            🔄 Actualización automática cada 10 segundos
+        </div>
+    </div>
+    
+    <script>
+        async function loadHealthData() {
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                
+                const healthCards = [
+                    {
+                        icon: data.status === 'healthy' ? '✅' : '❌',
+                        title: 'Estado del Servidor',
+                        value: data.status === 'healthy' ? 'Saludable' : 'Error',
+                        description: data.service,
+                        status: data.status === 'healthy' ? 'healthy' : 'error'
+                    },
+                    {
+                        icon: data.chrome_available ? '🌐' : '⚠️',
+                        title: 'Chrome/Selenium',
+                        value: data.chrome_available ? 'Disponible' : 'No disponible',
+                        description: data.chrome_available ? 'WhatsApp Web Real' : 'Modo API',
+                        status: data.chrome_available ? 'healthy' : 'warning'
+                    },
+                    {
+                        icon: '📱',
+                        title: 'Sesiones Activas',
+                        value: data.active_sessions,
+                        description: 'Conexiones WebSocket',
+                        status: data.active_sessions > 0 ? 'healthy' : 'warning'
+                    },
+                    {
+                        icon: '🌍',
+                        title: 'Entorno',
+                        value: data.environment === 'railway' ? 'Railway' : 'Local',
+                        description: 'Plataforma de deployment',
+                        status: 'healthy'
+                    }
+                ];
+                
+                const grid = document.getElementById('healthGrid');
+                grid.innerHTML = healthCards.map(card => `
+                    <div class="health-card status-${card.status}">
+                        <div class="health-icon">${card.icon}</div>
+                        <div class="health-title">${card.title}</div>
+                        <div class="health-value">${card.value}</div>
+                        <div class="health-description">${card.description}</div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('timestamp').textContent = 
+                    `Última actualización: ${new Date(data.timestamp).toLocaleString()}`;
+                    
+            } catch (error) {
+                console.error('Error cargando datos de salud:', error);
+                document.getElementById('timestamp').textContent = 
+                    `Error conectando con el servidor: ${error.message}`;
+            }
+        }
+        
+        function refreshHealth() {
+            loadHealthData();
+        }
+        
+        // Cargar datos inicial
+        loadHealthData();
+        
+        // Actualizar cada 10 segundos
+        setInterval(loadHealthData, 10000);
+    </script>
+</body>
+</html>

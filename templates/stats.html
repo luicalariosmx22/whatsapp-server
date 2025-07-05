@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Estadísticas - WhatsApp Server</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+        
+        .chart-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 2rem;
+        }
+        
+        .chart-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            height: 20px;
+            margin: 1rem 0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            border-radius: 10px;
+            transition: width 0.8s ease;
+            position: relative;
+        }
+        
+        .progress-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        .info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .info-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .info-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+        
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .timestamp {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 1rem;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo pulse">📊</div>
+            <h1 class="title">Estadísticas del Servidor</h1>
+            <p class="subtitle">Métricas en tiempo real del WhatsApp Web Server</p>
+        </div>
+        
+        <div class="stats-grid" id="statsGrid">
+            <!-- Se llenará dinámicamente -->
+        </div>
+        
+        <div class="chart-container">
+            <div class="chart-title">📈 Estado de Sesiones</div>
+            <div id="sessionChart">
+                <!-- Se llenará dinámicamente -->
+            </div>
+        </div>
+        
+        <div class="info-cards" id="infoCards">
+            <!-- Se llenará dinámicamente -->
+        </div>
+        
+        <div class="timestamp" id="timestamp">
+            Cargando estadísticas...
+        </div>
+        
+        <div class="nav-buttons">
+            <a href="/" class="btn">🏠 Inicio</a>
+            <a href="/health" class="btn">🩺 Salud</a>
+            <a href="/docs" class="btn">📖 Documentación</a>
+            <a href="#" class="btn" onclick="refreshStats()">🔄 Actualizar</a>
+        </div>
+    </div>
+    
+    <script>
+        async function loadStatsData() {
+            try {
+                const response = await fetch('/api/stats');
+                const data = await response.json();
+                
+                // Estadísticas principales
+                const stats = [
+                    {
+                        icon: '📱',
+                        value: data.sessions.total_sessions,
+                        label: 'Total Sesiones'
+                    },
+                    {
+                        icon: '✅',
+                        value: data.sessions.authenticated,
+                        label: 'Autenticadas'
+                    },
+                    {
+                        icon: '🔄',
+                        value: data.sessions.pending,
+                        label: 'Pendientes'
+                    },
+                    {
+                        icon: '📋',
+                        value: data.sessions.qr_ready,
+                        label: 'QR Listos'
+                    },
+                    {
+                        icon: '🔗',
+                        value: data.sessions.connecting,
+                        label: 'Conectando'
+                    }
+                ];
+                
+                const statsGrid = document.getElementById('statsGrid');
+                statsGrid.innerHTML = stats.map(stat => `
+                    <div class="stat-card">
+                        <div class="stat-icon">${stat.icon}</div>
+                        <div class="stat-value">${stat.value}</div>
+                        <div class="stat-label">${stat.label}</div>
+                    </div>
+                `).join('');
+                
+                // Gráfico de sesiones
+                const total = data.sessions.total_sessions || 1;
+                const sessionChart = document.getElementById('sessionChart');
+                sessionChart.innerHTML = `
+                    <div style="margin-bottom: 1rem;">
+                        <span>Autenticadas (${data.sessions.authenticated})</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${(data.sessions.authenticated / total) * 100}%">
+                                <div class="progress-label">${data.sessions.authenticated}/${total}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <span>Pendientes (${data.sessions.pending})</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${(data.sessions.pending / total) * 100}%; background: linear-gradient(90deg, #f59e0b, #fbbf24);">
+                                <div class="progress-label">${data.sessions.pending}/${total}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <span>QR Listos (${data.sessions.qr_ready})</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${(data.sessions.qr_ready / total) * 100}%; background: linear-gradient(90deg, #3b82f6, #60a5fa);">
+                                <div class="progress-label">${data.sessions.qr_ready}/${total}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Información del servidor
+                const infoCards = document.getElementById('infoCards');
+                infoCards.innerHTML = `
+                    <div class="info-card">
+                        <div class="info-title">🖥️ Información del Servidor</div>
+                        <div class="info-item">
+                            <span>Servicio</span>
+                            <span>${data.service}</span>
+                        </div>
+                        <div class="info-item">
+                            <span>Entorno</span>
+                            <span>${data.server_info.environment === 'railway' ? '🚂 Railway' : '💻 Local'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span>Chrome Disponible</span>
+                            <span>${data.server_info.chrome_available ? '✅ Sí' : '❌ No'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span>Modo Debug</span>
+                            <span>${data.server_info.debug_mode ? '🐛 Activo' : '🔒 Desactivado'}</span>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-title">📈 Métricas de Sesiones</div>
+                        <div class="info-item">
+                            <span>Tasa de Éxito</span>
+                            <span>${total > 0 ? Math.round((data.sessions.authenticated / total) * 100) : 0}%</span>
+                        </div>
+                        <div class="info-item">
+                            <span>Sesiones Activas</span>
+                            <span>${data.sessions.authenticated + data.sessions.qr_ready}</span>
+                        </div>
+                        <div class="info-item">
+                            <span>En Proceso</span>
+                            <span>${data.sessions.pending + data.sessions.connecting}</span>
+                        </div>
+                        <div class="info-item">
+                            <span>Estado General</span>
+                            <span>${total > 0 ? '🟢 Activo' : '🟡 Esperando'}</span>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('timestamp').textContent = 
+                    `Última actualización: ${new Date(data.timestamp).toLocaleString()}`;
+                    
+            } catch (error) {
+                console.error('Error cargando estadísticas:', error);
+                document.getElementById('timestamp').textContent = 
+                    `Error conectando con el servidor: ${error.message}`;
+            }
+        }
+        
+        function refreshStats() {
+            loadStatsData();
+        }
+        
+        // Cargar datos inicial
+        loadStatsData();
+        
+        // Actualizar cada 15 segundos
+        setInterval(loadStatsData, 15000);
+    </script>
+</body>
+</html>
